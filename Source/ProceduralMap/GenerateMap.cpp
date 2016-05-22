@@ -95,12 +95,51 @@ AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
 	return (map);
 }
 
+void AGenerateMap::SetSquareZWithPosition(AGenerateMap::t_map *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
+{
+	int i = ((pos.Y * mapSize.X) + pos.X) * 6;
+
+	if (i >= map->Vertices.Num() || map == NULL)
+		return;
+
+	map->Vertices[i++].Z = AB.Y;
+	map->Vertices[i++].Z = AB.X;
+	map->Vertices[i++].Z = CD.X;
+
+	map->Vertices[i++].Z = CD.X;
+	map->Vertices[i++].Z = CD.Y;
+	map->Vertices[i++].Z = AB.Y;
+}
+
 // Called when the game starts or when spawned
 void AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	Map = GenerateMap(MapSizeX, MapSizeY);
+
+	{
+		const int heightmap[3][3] =
+		{
+			{ 100, 0, 0 },
+			{ 0, 100, 0 },
+			{ 0, 0, 0 }
+		};
+
+		for (int i = 0, k = 0; i < 4; i++)
+		{
+			for (int j = 0, l = 0; j < 4; j++)
+			{
+				FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
+				FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
+
+				SetSquareZWithPosition(&Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
+				UE_LOG(LogTemp, Warning, TEXT("OK4"));
+				l++;
+			}
+			k++;
+		}
+	}
 
 	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 	Mesh->SetMaterial(0, Material);

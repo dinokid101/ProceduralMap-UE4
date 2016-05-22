@@ -53,4 +53,5 @@ private:
 	t_map					SetSquare(int x, int y, int index);
 	t_map					GenerateMap(int x, int y);
 	
+	void					SetSquareZWithPosition(t_map *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD);
 };
