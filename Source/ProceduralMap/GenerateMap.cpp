@@ -2,9 +2,10 @@
 
 #include "ProceduralMap.h"
 #include "GenerateMap.h"
-
 #include "ProceduralMeshComponent.h"
 
+#include <cstdlib>
+#include <ctime>
 
 // Sets default values
 AGenerateMap::AGenerateMap()
@@ -119,22 +120,24 @@ void AGenerateMap::BeginPlay()
 	Map = GenerateMap(MapSizeX, MapSizeY);
 
 	{
-		const int heightmap[3][3] =
-		{
-			{ 100, 0, 0 },
-			{ 0, 100, 0 },
-			{ 0, 0, 0 }
-		};
+		srand(time(NULL));
+		int32 heightmap[101][101] = {};
 
-		for (int i = 0, k = 0; i < 4; i++)
+		for (int i = 0; i < MapSizeY + 1; i++)
 		{
-			for (int j = 0, l = 0; j < 4; j++)
+			for (int j = 0; j < MapSizeX + 1; j++)
+			{
+				heightmap[i][j] = rand() % 500;
+			}
+		}
+
+		for (int i = 0, k = 0; i < MapSizeY; i++)
+		{
+			for (int j = 0, l = 0; j < MapSizeX; j++)
 			{
 				FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
 				FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
-
 				SetSquareZWithPosition(&Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
-				UE_LOG(LogTemp, Warning, TEXT("OK4"));
 				l++;
 			}
 			k++;
