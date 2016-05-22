@@ -79,7 +79,20 @@ void AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Map = SetSquare(0, 0, 0);
+	AGenerateMap::t_map		mapToAppend;
+	int						index;
+
+	index = 0;
+	{
+		{
+			mapToAppend = SetSquare(j, i, index);
+
+			Map.Vertices.Append(mapToAppend.Vertices);
+			Map.Triangles.Append(mapToAppend.Triangles);
+			Map.Normals.Append(mapToAppend.Normals);
+			Map.UV0.Append(mapToAppend.UV0);
+		}
+	}
 
 	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 	Mesh->SetMaterial(0, Material);

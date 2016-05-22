@@ -36,9 +36,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig)
 		UMaterialInterface* Material;
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
-		int32				size_x;
+		int32				MapSizeX;
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
-		int32				size_y;
+		int32				MapSizeY;
 	/*END CONFIG*/
 
 	UProceduralMeshComponent *Mesh;
