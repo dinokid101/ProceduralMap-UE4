@@ -39,6 +39,10 @@ public:
 		int32				MapSizeX;
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
 		int32				MapSizeY;
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+		float				SquareScale = 100;
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+		float				SquareHeightScale = 100;
 	/*END CONFIG*/
 
 	UProceduralMeshComponent *Mesh;

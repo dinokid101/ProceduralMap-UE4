@@ -36,8 +36,8 @@ TArray<FVector> AGenerateMap::SetSquareVertices(FVector A, FVector B, FVector C,
 AGenerateMap::t_map AGenerateMap::SetSquare(int x, int y, int index)
 {
 	AGenerateMap::t_map		map;
-	int						squareScale = 100;
-	int						heightScale = 1;
+	int						squareScale = SquareScale;
+	int						heightScale = SquareHeightScale;
 
 	FVector A = FVector((squareScale * x), (squareScale * y), 1 * heightScale);
 	FVector B = FVector((squareScale * x) + squareScale, (squareScale * y), 1 * heightScale);
