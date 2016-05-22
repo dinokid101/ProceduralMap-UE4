@@ -48,7 +48,9 @@ public:
 	UProceduralMeshComponent *Mesh;
 	t_map					Map;
 
+private:
 	TArray<FVector>			SetSquareVertices(FVector A, FVector B, FVector C, FVector D);
 	t_map					SetSquare(int x, int y, int index);
+	t_map					GenerateMap(int x, int y);
 	
 };

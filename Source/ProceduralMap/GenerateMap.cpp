@@ -54,7 +54,6 @@ AGenerateMap::t_map AGenerateMap::SetSquare(int x, int y, int index)
 	map.Triangles.Add(index++);
 	map.Triangles.Add(index++);
 
-
 	map.Normals.Add(FVector(0, -1, 0));
 	map.Normals.Add(FVector(0, -1, 0));
 	map.Normals.Add(FVector(0, -1, 0));
@@ -74,27 +73,34 @@ AGenerateMap::t_map AGenerateMap::SetSquare(int x, int y, int index)
 	return (map);
 }
 
+AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
+{
+	AGenerateMap::t_map		map;
+	AGenerateMap::t_map		mapToAppend;
+	int						index;
+
+	index = 0;
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++, index += 6)
+		{
+			mapToAppend = SetSquare(j, i, index);
+
+			map.Vertices.Append(mapToAppend.Vertices);
+			map.Triangles.Append(mapToAppend.Triangles);
+			map.Normals.Append(mapToAppend.Normals);
+			map.UV0.Append(mapToAppend.UV0);
+		}
+	}
+	return (map);
+}
+
 // Called when the game starts or when spawned
 void AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AGenerateMap::t_map		mapToAppend;
-	int						index;
-
-	index = 0;
-	for (int i = 0; i < MapSizeY; i++)
-	{
-		for (int j = 0; j < MapSizeX; j++, index += 6)
-		{
-			mapToAppend = SetSquare(j, i, index);
-
-			Map.Vertices.Append(mapToAppend.Vertices);
-			Map.Triangles.Append(mapToAppend.Triangles);
-			Map.Normals.Append(mapToAppend.Normals);
-			Map.UV0.Append(mapToAppend.UV0);
-		}
-	}
+	Map = GenerateMap(MapSizeX, MapSizeY);
 
 	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
 	Mesh->SetMaterial(0, Material);
