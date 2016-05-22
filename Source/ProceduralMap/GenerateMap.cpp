@@ -83,7 +83,9 @@ void AGenerateMap::BeginPlay()
 	int						index;
 
 	index = 0;
+	for (int i = 0; i < MapSizeY; i++)
 	{
+		for (int j = 0; j < MapSizeX; j++, index += 6)
 		{
 			mapToAppend = SetSquare(j, i, index);
 
