@@ -43,6 +43,9 @@ public:
 		float				SquareScale = 100;
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
 		float				SquareHeightScale = 100;
+
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+		float				PerlinRes = 10;
 	/*END CONFIG*/
 
 	UProceduralMeshComponent *Mesh;

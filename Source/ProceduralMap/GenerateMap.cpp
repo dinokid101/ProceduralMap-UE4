@@ -4,8 +4,7 @@
 #include "GenerateMap.h"
 #include "ProceduralMeshComponent.h"
 
-#include <cstdlib>
-#include <ctime>
+#include <PerlinNoise.h>
 
 // Sets default values
 AGenerateMap::AGenerateMap()
@@ -112,6 +111,9 @@ void AGenerateMap::SetSquareZWithPosition(AGenerateMap::t_map *map, FVector2D po
 	map->Vertices[i++].Z = AB.Y;
 }
 
+#include <cstdlib>
+#include <ctime>
+
 // Called when the game starts or when spawned
 void AGenerateMap::BeginPlay()
 {
@@ -119,29 +121,21 @@ void AGenerateMap::BeginPlay()
 	
 	Map = GenerateMap(MapSizeX, MapSizeY);
 
+	PerlinNoise perlin = PerlinNoise(MapSizeX + 1, MapSizeY + 1, PerlinRes);
+	perlin.setScale(SquareHeightScale);
+	perlin.Generate2DPerlinNoise();
+	float **heightmap = perlin.getMap();
+
+	for (int i = 0, k = 0; i < MapSizeY; i++)
 	{
-		srand(time(NULL));
-		int32 heightmap[101][101] = {};
-
-		for (int i = 0; i < MapSizeY + 1; i++)
+		for (int j = 0, l = 0; j < MapSizeX; j++)
 		{
-			for (int j = 0; j < MapSizeX + 1; j++)
-			{
-				heightmap[i][j] = rand() % 500;
-			}
+			FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
+			FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
+			SetSquareZWithPosition(&Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
+			l++;
 		}
-
-		for (int i = 0, k = 0; i < MapSizeY; i++)
-		{
-			for (int j = 0, l = 0; j < MapSizeX; j++)
-			{
-				FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
-				FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
-				SetSquareZWithPosition(&Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
-				l++;
-			}
-			k++;
-		}
+		k++;
 	}
 
 	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
