@@ -30,6 +30,7 @@ public:
 		TArray<int32>		Triangles;
 		TArray<FVector>		Normals;
 		TArray<FVector2D>	UV0;
+		TArray<FProcMeshTangent> Tangent;
 	}						t_map;
 
 	/*CONFIG*/

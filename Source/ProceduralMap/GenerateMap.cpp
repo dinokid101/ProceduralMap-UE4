@@ -2,7 +2,9 @@
 
 #include "ProceduralMap.h"
 #include "GenerateMap.h"
+
 #include "ProceduralMeshComponent.h"
+#include "KismetProceduralMeshLibrary.h"
 
 #include <PerlinNoise.h>
 
@@ -54,15 +56,6 @@ AGenerateMap::t_map AGenerateMap::SetSquare(int x, int y, int index)
 	map.Triangles.Add(index++);
 	map.Triangles.Add(index++);
 
-	map.Normals.Add(FVector(0, -1, 0));
-	map.Normals.Add(FVector(0, -1, 0));
-	map.Normals.Add(FVector(0, -1, 0));
-
-	map.Normals.Add(FVector(0, -1, 0));
-	map.Normals.Add(FVector(0, -1, 0));
-	map.Normals.Add(FVector(0, -1, 0));
-
-
 	map.UV0.Add(FVector2D(1, 0));
 	map.UV0.Add(FVector2D(0, 0));
 	map.UV0.Add(FVector2D(0, 1));
@@ -88,10 +81,13 @@ AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
 
 			map.Vertices.Append(mapToAppend.Vertices);
 			map.Triangles.Append(mapToAppend.Triangles);
-			map.Normals.Append(mapToAppend.Normals);
 			map.UV0.Append(mapToAppend.UV0);
+
+			map.Tangent.Append(mapToAppend.Tangent);
+			map.Normals.Append(mapToAppend.Normals);
 		}
 	}
+	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
 	return (map);
 }
 
@@ -138,7 +134,8 @@ void AGenerateMap::BeginPlay()
 		k++;
 	}
 
-	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), false);
+	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), Map.Tangent, false);
+
 	Mesh->SetMaterial(0, Material);
 }
 
