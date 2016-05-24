@@ -7,6 +7,27 @@
 #include "GameFramework/Actor.h"
 #include "GenerateMap.generated.h"
 
+USTRUCT()
+struct FMapStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<FVector>	Vertices;
+
+	UPROPERTY()
+		TArray<int32> Triangles;
+
+	UPROPERTY()
+		TArray<FVector> Normals;
+
+	UPROPERTY()
+		TArray<FVector2D> UV0;
+
+	UPROPERTY()
+		TArray<FProcMeshTangent> Tangent;
+};
+
 UCLASS()
 class PROCEDURALMAP_API AGenerateMap : public AActor
 {
@@ -23,15 +44,6 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 public:
-
-	typedef struct			s_map
-	{
-		TArray<FVector>		Vertices;
-		TArray<int32>		Triangles;
-		TArray<FVector>		Normals;
-		TArray<FVector2D>	UV0;
-		TArray<FProcMeshTangent> Tangent;
-	}						t_map;
 
 	/*CONFIG*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig)
@@ -54,12 +66,14 @@ public:
 		bool				CalculateNormalAndTangent = true;
 	/*END CONFIG*/
 
-	UProceduralMeshComponent *Mesh;
-	t_map					Map;
+	UProceduralMeshComponent	*Mesh;
+	
+	UPROPERTY(BluePrintReadwrite, Category = MapConfig)
+		FMapStruct			Map;
 
 private:
-	t_map					setQuad(int x, int y, int index);
-	t_map					GenerateMap(int x, int y);
+	FMapStruct				setQuad(int x, int y, int index);
+	FMapStruct				GenerateMap(int x, int y);
 	
-	void					SetSquareZWithPosition(t_map *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD);
+	void					SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD);
 };

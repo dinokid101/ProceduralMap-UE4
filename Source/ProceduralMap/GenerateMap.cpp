@@ -17,13 +17,14 @@ AGenerateMap::AGenerateMap()
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 		Mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMesh"));
-		Mesh->AttachTo(RootComponent);
+
+		Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
-AGenerateMap::t_map AGenerateMap::setQuad(int x, int y, int index)
+FMapStruct AGenerateMap::setQuad(int x, int y, int index)
 {
-	AGenerateMap:: t_map	map;
+	FMapStruct				map;
 	int						squareScale = SquareScale;
 	int						heightScale = SquareHeightScale;
 
@@ -41,13 +42,11 @@ AGenerateMap::t_map AGenerateMap::setQuad(int x, int y, int index)
 	return (map);
 }
 
-#include <ctime>
-
-AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
+FMapStruct AGenerateMap::GenerateMap(int x, int y)
 {
-	AGenerateMap::t_map		map;
-	AGenerateMap::t_map		mapToAppend;
-	int						index;
+	FMapStruct	map;
+	FMapStruct	mapToAppend;
+	int			index;
 
 	index = 0;
 	for (int i = 0; i < y; i++)
@@ -66,7 +65,7 @@ AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
 	return (map);
 }
 
-void AGenerateMap::SetSquareZWithPosition(AGenerateMap::t_map *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
+void AGenerateMap::SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
 {
 	int i = ((pos.Y * mapSize.X) + pos.X) * 4;
 
@@ -77,7 +76,6 @@ void AGenerateMap::SetSquareZWithPosition(AGenerateMap::t_map *map, FVector2D po
 	map->Vertices[i++].Z = AB.Y;
 	map->Vertices[i++].Z = CD.X;
 	map->Vertices[i++].Z = CD.Y;
-
 }
 
 // Called when the game starts or when spawned
