@@ -134,7 +134,7 @@ void AGenerateMap::BeginPlay()
 		k++;
 	}
 
-	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), Map.Tangent, false);
+	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), Map.Tangent, true);
 
 	Mesh->SetMaterial(0, Material);
 }
