@@ -83,7 +83,7 @@ void AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Map = GenerateMap(MapSizeX, MapSizeY);
+	_Map = GenerateMap(MapSizeX, MapSizeY);
 
 	PerlinNoise perlin = PerlinNoise(MapSizeX + 1, MapSizeY + 1, PerlinRes);
 	perlin.setScale(SquareHeightScale);
@@ -96,13 +96,13 @@ void AGenerateMap::BeginPlay()
 		{
 			FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
 			FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
-			SetSquareZWithPosition(&Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
+			SetSquareZWithPosition(&_Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
 			l++;
 		}
 		k++;
 	}
 
-	Mesh->CreateMeshSection(0, Map.Vertices, Map.Triangles, Map.Normals, Map.UV0, TArray<FColor>(), Map.Tangent, true);
+	Mesh->CreateMeshSection(0, _Map.Vertices, _Map.Triangles, _Map.Normals, _Map.UV0, TArray<FColor>(), _Map.Tangent, true);
 
 	Mesh->SetMaterial(0, Material);
 }
@@ -113,4 +113,3 @@ void AGenerateMap::Tick( float DeltaTime )
 	Super::Tick( DeltaTime );
 
 }
-

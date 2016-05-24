@@ -7,24 +7,24 @@
 #include "GameFramework/Actor.h"
 #include "GenerateMap.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMapStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<FVector>	Vertices;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<int32> Triangles;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<FVector> Normals;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<FVector2D> UV0;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<FProcMeshTangent> Tangent;
 };
 
@@ -66,10 +66,12 @@ public:
 		bool				CalculateNormalAndTangent = true;
 	/*END CONFIG*/
 
-	UProceduralMeshComponent	*Mesh;
+	UPROPERTY(BluePrintReadwrite)
+		UProceduralMeshComponent *Mesh;
 	
-	UPROPERTY(BluePrintReadwrite, Category = MapConfig)
-		FMapStruct			Map;
+protected:
+	UPROPERTY(BluePrintReadwrite)
+		FMapStruct			_Map;
 
 private:
 	FMapStruct				setQuad(int x, int y, int index);
