@@ -21,50 +21,27 @@ AGenerateMap::AGenerateMap()
 	}
 }
 
-TArray<FVector> AGenerateMap::SetSquareVertices(FVector A, FVector B, FVector C, FVector D)
+AGenerateMap::t_map AGenerateMap::setQuad(int x, int y, int index)
 {
-	TArray<FVector> square;
-
-	square.Add(FVector(B.X, B.Y, B.Z));
-	square.Add(FVector(A.X, A.Y, A.Z));
-	square.Add(FVector(C.X, C.Y, C.Z));
-
-	square.Add(FVector(C.X, C.Y, C.Z));
-	square.Add(FVector(D.X, D.Y, D.Z));
-	square.Add(FVector(B.X, B.Y, B.Z));
-	return (square);
-}
-
-AGenerateMap::t_map AGenerateMap::SetSquare(int x, int y, int index)
-{
-	AGenerateMap::t_map		map;
+	AGenerateMap:: t_map	map;
 	int						squareScale = SquareScale;
 	int						heightScale = SquareHeightScale;
 
-	FVector A = FVector((squareScale * x), (squareScale * y), 1 * heightScale);
-	FVector B = FVector((squareScale * x) + squareScale, (squareScale * y), 1 * heightScale);
-	FVector C = FVector((squareScale * x), (squareScale * y) + squareScale, 1 * heightScale);
-	FVector D = FVector((squareScale * x) + squareScale, (squareScale * y) + squareScale, 1 * heightScale);
+	map.Vertices.Add(FVector((squareScale * x), (squareScale * y), 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y), 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x), (squareScale * y) + squareScale, 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y) + squareScale, 1 * heightScale));
 
-	map.Vertices = SetSquareVertices(A, B, C, D);
-
-	map.Triangles.Add(index++);
-	map.Triangles.Add(index++);
-	map.Triangles.Add(index++);
-
-	map.Triangles.Add(index++);
-	map.Triangles.Add(index++);
-	map.Triangles.Add(index++);
-
-	map.UV0.Add(FVector2D(1, 0));
 	map.UV0.Add(FVector2D(0, 0));
-	map.UV0.Add(FVector2D(0, 1));
-
+	map.UV0.Add(FVector2D(1, 0));
 	map.UV0.Add(FVector2D(0, 1));
 	map.UV0.Add(FVector2D(1, 1));
-	map.UV0.Add(FVector2D(1, 0));
+
+	UKismetProceduralMeshLibrary::ConvertQuadToTriangles(map.Triangles, index + 1, index, index + 2, index + 3);
 	return (map);
 }
+
+#include <ctime>
 
 AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
 {
@@ -75,40 +52,33 @@ AGenerateMap::t_map AGenerateMap::GenerateMap(int x, int y)
 	index = 0;
 	for (int i = 0; i < y; i++)
 	{
-		for (int j = 0; j < x; j++, index += 6)
+		for (int j = 0; j < x; j++, index += 4)
 		{
-			mapToAppend = SetSquare(j, i, index);
-
+			mapToAppend = setQuad(j, i, index);
 			map.Vertices.Append(mapToAppend.Vertices);
 			map.Triangles.Append(mapToAppend.Triangles);
 			map.UV0.Append(mapToAppend.UV0);
-
-			map.Tangent.Append(mapToAppend.Tangent);
-			map.Normals.Append(mapToAppend.Normals);
 		}
 	}
-	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
+
+	if (CalculateNormalAndTangent)
+		UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
 	return (map);
 }
 
 void AGenerateMap::SetSquareZWithPosition(AGenerateMap::t_map *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
 {
-	int i = ((pos.Y * mapSize.X) + pos.X) * 6;
+	int i = ((pos.Y * mapSize.X) + pos.X) * 4;
 
 	if (i >= map->Vertices.Num() || map == NULL)
 		return;
 
-	map->Vertices[i++].Z = AB.Y;
 	map->Vertices[i++].Z = AB.X;
-	map->Vertices[i++].Z = CD.X;
-
+	map->Vertices[i++].Z = AB.Y;
 	map->Vertices[i++].Z = CD.X;
 	map->Vertices[i++].Z = CD.Y;
-	map->Vertices[i++].Z = AB.Y;
-}
 
-#include <cstdlib>
-#include <ctime>
+}
 
 // Called when the game starts or when spawned
 void AGenerateMap::BeginPlay()
