@@ -64,6 +64,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
 		bool				CalculateNormalAndTangent = true;
+
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = MapConfig)
+		TEnumAsByte<ECollisionChannel>	CollisionChannel;
 	/*END CONFIG*/
 
 	UPROPERTY(BluePrintReadwrite)

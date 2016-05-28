@@ -103,8 +103,8 @@ void AGenerateMap::BeginPlay()
 	}
 
 	Mesh->CreateMeshSection(0, _Map.Vertices, _Map.Triangles, _Map.Normals, _Map.UV0, TArray<FColor>(), _Map.Tangent, true);
-
 	Mesh->SetMaterial(0, Material);
+	Mesh->SetCollisionResponseToChannel(CollisionChannel, ECollisionResponse::ECR_Block);
 }
 
 // Called every frame
