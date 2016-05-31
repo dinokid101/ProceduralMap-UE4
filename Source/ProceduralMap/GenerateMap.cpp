@@ -143,9 +143,9 @@ TArray<int32>	AGenerateMap::SuperBrush(FVector2D Pos, FVector2D BrushSize)
 	{
 		//la "gauche" et la "droite" (x - 1 et x + BrushSizeSizeX)
 		setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, i, UpRight, MapSizeX));
-		setBrushVertice(verticesToEdit, GetPos(Pos.Y - 1, i, DownRight, MapSizeX));
+		setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, i, DownRight, MapSizeX));
 		setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, i, UpLeft, MapSizeX));
-		setBrushVertice(verticesToEdit, GetPos(Pos.Y + BrushSize.X, i, DownLeft, MapSizeX));
+		setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, i, DownLeft, MapSizeX));
 		for (j = Pos.X; j < Pos.X + BrushSize.X; j++)
 		{
 			if (i == Pos.Y)
@@ -156,7 +156,7 @@ TArray<int32>	AGenerateMap::SuperBrush(FVector2D Pos, FVector2D BrushSize)
 				setBrushVertice(verticesToEdit, GetPos(j, BrushSize.Y + 1, UpLeft, MapSizeX));
 				setBrushVertice(verticesToEdit, GetPos(j, BrushSize.Y + 1, UpRight, MapSizeX));
 			}
-			//le centre du carré
+			//le centre du carrÃ©
 			setBrushVertice(verticesToEdit, GetPos(j, i, UpLeft, MapSizeX));
 			setBrushVertice(verticesToEdit, GetPos(j, i, UpRight, MapSizeX));
 			setBrushVertice(verticesToEdit, GetPos(j, i, DownLeft, MapSizeX));
