@@ -28,17 +28,6 @@ struct FMapStruct
 		TArray<FProcMeshTangent> Tangent;
 };
 
-
-UENUM(BlueprintType)
-enum EQuadIndice
-{
-	UpLeft = 0 UMETA(DisplayName = "Up left corner"),
-	UpRight = 1 UMETA(DisplayName = "Up right corner"),
-	DownLeft = 2 UMETA(DisplayName = "Down left corner"),
-	DownRight = 3 UMETA(DisplayName = "Down right corner")
-};
-
-
 UCLASS()
 class PROCEDURALMAP_API AGenerateMap : public AActor
 {
@@ -61,9 +50,7 @@ public:
 		UMaterialInterface* Material;
 
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
-		int32				MapSizeX;
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
-		int32				MapSizeY;
+		FVector2D			MapSize = FVector2D(10, 10);
 
 	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
 		float				SquareScale = 100;
@@ -92,12 +79,4 @@ private:
 	FMapStruct				GenerateMap(int x, int y);
 	
 	void					SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD);
-
-protected:
-	/*Need to be moved in another class*/
-	UFUNCTION(BlueprintCallable, Category = "SunShine")
-	TArray<int32> SuperBrush(FVector2D Pos, FVector2D BrushSize);
-	/*
-	int		GetPos(int x, int y, int quadIndice, int sizeX);
-	void	SetMap(int pos);*/
 };

@@ -83,20 +83,20 @@ void AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	_Map = GenerateMap(MapSizeX, MapSizeY);
+	_Map = GenerateMap(MapSize.X, MapSize.Y);
 
-	PerlinNoise perlin = PerlinNoise(MapSizeX + 1, MapSizeY + 1, PerlinRes);
+	PerlinNoise perlin = PerlinNoise(MapSize.X + 1, MapSize.Y + 1, PerlinRes);
 	perlin.setScale(SquareHeightScale);
 	perlin.Generate2DPerlinNoise();
 	float **heightmap = perlin.getMap();
 
-	for (int i = 0, k = 0; i < MapSizeY; i++)
+	for (int i = 0, k = 0; i < MapSize.Y; i++)
 	{
-		for (int j = 0, l = 0; j < MapSizeX; j++)
+		for (int j = 0, l = 0; j < MapSize.X; j++)
 		{
 			FVector2D AB = FVector2D(heightmap[k][l], heightmap[k][l + 1]);
 			FVector2D CD = FVector2D(heightmap[k + 1][l], heightmap[k + 1][l + 1]);
-			SetSquareZWithPosition(&_Map, FVector2D(j, i), FVector2D(MapSizeX, MapSizeY), AB, CD);
+			SetSquareZWithPosition(&_Map, FVector2D(j, i), FVector2D(MapSize.X, MapSize.Y), AB, CD);
 			l++;
 		}
 		k++;
@@ -112,58 +112,4 @@ void AGenerateMap::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-}
-
-int		GetPos(int x, int y, int quadIndice, int sizeX)
-{
-	if (x < 0 || y < 0)
-		return (-1);
-	return ((((y * sizeX) + x) * 4) + quadIndice);
-}
-
-void	setBrushVertice(TArray<int32> &lst, int pos)
-{
-	if (pos < 0)
-		return;
-	lst.Add(pos);
-	UE_LOG(LogTemp, Warning, TEXT("%d"), pos);
-}
-
-TArray<int32>	AGenerateMap::SuperBrush(FVector2D Pos, FVector2D BrushSize)
-{
-	int i, j;
-
-	TArray<int32>	verticesToEdit;
-
-	//Les 4 coins
-	setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, Pos.Y - 1, DownRight, MapSizeX));
-	setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, Pos.Y - 1, DownLeft, MapSizeX));
-	setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, Pos.Y + BrushSize.Y, UpLeft, MapSizeX));
-	setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, Pos.Y + BrushSize.Y, UpRight, MapSizeX));
-
-	for (i = Pos.Y; i < Pos.Y + BrushSize.Y; i++)
-	{
-		//la "gauche" et la "droite" (x - 1 et x + BrushSizeSizeX)
-		setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, i, UpRight, MapSizeX));
-		setBrushVertice(verticesToEdit, GetPos(Pos.X - 1, i, DownRight, MapSizeX));
-		setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, i, UpLeft, MapSizeX));
-		setBrushVertice(verticesToEdit, GetPos(Pos.X + BrushSize.X, i, DownLeft, MapSizeX));
-		for (j = Pos.X; j < Pos.X + BrushSize.X; j++)
-		{
-			if (i == Pos.Y)
-			{
-				//le "haut" et le "bas" (y - 1 et y + BrushSizeSizeY)
-				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y - 1, DownLeft, MapSizeX));
-				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y - 1, DownRight, MapSizeX));
-				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y + BrushSize.Y, UpLeft, MapSizeX));
-				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y + BrushSize.Y, UpRight, MapSizeX));
-			}
-			//le centre du carré
-			setBrushVertice(verticesToEdit, GetPos(j, i, UpLeft, MapSizeX));
-			setBrushVertice(verticesToEdit, GetPos(j, i, UpRight, MapSizeX));
-			setBrushVertice(verticesToEdit, GetPos(j, i, DownLeft, MapSizeX));
-			setBrushVertice(verticesToEdit, GetPos(j, i, DownRight, MapSizeX));
-		}
-	}
-	return (verticesToEdit);
 }
