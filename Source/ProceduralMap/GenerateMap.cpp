@@ -116,6 +116,8 @@ void AGenerateMap::Tick( float DeltaTime )
 
 int		GetPos(int x, int y, int quadIndice, int sizeX)
 {
+	if (x < 0 || y < 0)
+		return (-1);
 	return ((((y * sizeX) + x) * 4) + quadIndice);
 }
 
@@ -153,8 +155,8 @@ TArray<int32>	AGenerateMap::SuperBrush(FVector2D Pos, FVector2D BrushSize)
 				//le "haut" et le "bas" (y - 1 et y + BrushSizeSizeY)
 				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y - 1, DownLeft, MapSizeX));
 				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y - 1, DownRight, MapSizeX));
-				setBrushVertice(verticesToEdit, GetPos(j, BrushSize.Y + 1, UpLeft, MapSizeX));
-				setBrushVertice(verticesToEdit, GetPos(j, BrushSize.Y + 1, UpRight, MapSizeX));
+				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y + BrushSize.Y, UpLeft, MapSizeX));
+				setBrushVertice(verticesToEdit, GetPos(j, Pos.Y + BrushSize.Y, UpRight, MapSizeX));
 			}
 			//le centre du carré
 			setBrushVertice(verticesToEdit, GetPos(j, i, UpLeft, MapSizeX));
