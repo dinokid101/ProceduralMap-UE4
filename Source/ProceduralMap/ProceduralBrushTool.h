@@ -34,7 +34,7 @@ public:
 		void			SquareBrush(FVector2D pos, UPARAM(ref) FMapStruct &map);
 
 	UFUNCTION(BlueprintCallable, Category = "Brush")
-		int				GetPos(int x, int y, int quadIndice, int sizeX);
+		int				GetPos(int x, int y, int quadIndice, FVector2D mapSize);
 
 	UFUNCTION(BlueprintCallable, Category = "Brush")
 		void			ApplyBrushToMap(FVector2D pos, UPARAM(ref) FMapStruct &map);
