@@ -26,6 +26,15 @@ struct FMapStruct
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
 		TArray<FProcMeshTangent> Tangent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
+		FVector2D		MapSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
+		float			MapSquareScale;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Map Struct")
+		float			MapHeightScale;
 };
 
 UCLASS()
@@ -46,24 +55,24 @@ public:
 public:
 
 	/*CONFIG*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MapConfig")
 		UMaterialInterface* Material;
 
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = "MapConfig")
 		FVector2D			MapSize = FVector2D(10, 10);
 
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = "MapConfig")
 		float				SquareScale = 100;
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = "MapConfig")
 		float				SquareHeightScale = 10;
 
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = "MapConfig")
 		float				PerlinRes = 10;
 
-	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadwrite, Category = "MapConfig")
 		bool				CalculateNormalAndTangent = true;
 
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = MapConfig)
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "MapConfig")
 		TEnumAsByte<ECollisionChannel>	CollisionChannel;
 	/*END CONFIG*/
 
@@ -73,10 +82,12 @@ public:
 protected:
 	UPROPERTY(BluePrintReadwrite)
 		FMapStruct			_Map;
+	UFUNCTION(BluePrintCallable, Category = GenerateMap)
+		FMapStruct			GenerateMap(int x, int y);
+	UFUNCTION(BluePrintCallable, Category = GenerateMap)
+		void				UpdateMap(UPARAM(ref) FMapStruct &map);
 
-private:
+protected:
 	FMapStruct				setQuad(int x, int y, int index);
-	FMapStruct				GenerateMap(int x, int y);
-	
 	void					SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD);
 };

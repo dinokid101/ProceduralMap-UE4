@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <GenerateMap.h>
+
 #include "Object.h"
 #include "ProceduralBrushTool.generated.h"
 
@@ -23,14 +25,21 @@ class PROCEDURALMAP_API UProceduralBrushTool : public UObject
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
+		FVector2D		BrushSize = FVector2D(1, 1);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Brush")
-		TArray<int32>	SquareBrush(FVector2D pos, FVector2D brushSize, FVector2D mapSize);
+		void			SquareBrush(FVector2D pos, UPARAM(ref) FMapStruct &map);
 
 	UFUNCTION(BlueprintCallable, Category = "Brush")
-		int		GetPos(int x, int y, int quadIndice, int sizeX);
+		int				GetPos(int x, int y, int quadIndice, int sizeX);
 
 	UFUNCTION(BlueprintCallable, Category = "Brush")
-		void	SetVertice(TArray<int32> &lst, int pos);	
+		void			ApplyBrushToMap(FVector2D pos, UPARAM(ref) FMapStruct &map);
+
+private:
+	inline void AddVertice(FMapStruct &map, int pos, int value);
+
 };

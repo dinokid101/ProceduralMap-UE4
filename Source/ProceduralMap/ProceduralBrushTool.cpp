@@ -11,50 +11,59 @@ UProceduralBrushTool::GetPos(int x, int y, int quadIndice, int sizeX)
 	return ((((y * sizeX) + x) * 4) + quadIndice);
 }
 
-void
-UProceduralBrushTool::SetVertice(TArray<int32> &lst, int pos)
+inline void
+UProceduralBrushTool::AddVertice(FMapStruct &map, int pos, int value)
 {
-	if (pos < 0)
+	if (pos < 0 || pos >= map.Vertices.Num())
 		return;
-	lst.Add(pos);
+	map.Vertices[pos].Z += value;
 }
 
-TArray<int32>
-UProceduralBrushTool::SquareBrush(FVector2D pos, FVector2D brushSize, FVector2D mapSize)
+void
+UProceduralBrushTool::SquareBrush(FVector2D pos, FMapStruct &map)
 {
 	int i, j;
 
 	TArray<int32>	verticesToEdit;
 
-	//Les 4 coins
-	SetVertice(verticesToEdit, GetPos(pos.X - 1, pos.Y - 1, DownRight, mapSize.X));
-	SetVertice(verticesToEdit, GetPos(pos.X + brushSize.X, pos.Y - 1, DownLeft, mapSize.X));
-	SetVertice(verticesToEdit, GetPos(pos.X + brushSize.X, pos.Y + brushSize.Y, UpLeft, mapSize.X));
-	SetVertice(verticesToEdit, GetPos(pos.X - 1, pos.Y + brushSize.Y, UpRight, mapSize.X));
+	int value = 10;
 
-	for (i = pos.Y; i < pos.Y + brushSize.Y; i++)
+	//Les 4 coins
+	AddVertice(map, GetPos(pos.X - 1, pos.Y - 1, DownRight, map.MapSize.X), value);
+	AddVertice(map, GetPos(pos.X + BrushSize.X, pos.Y - 1, DownLeft, map.MapSize.X), value);
+	AddVertice(map, GetPos(pos.X + BrushSize.X, pos.Y + BrushSize.Y, UpLeft, map.MapSize.X), value);
+	AddVertice(map, GetPos(pos.X - 1, pos.Y + BrushSize.Y, UpRight, map.MapSize.X), value);
+
+	for (i = pos.Y; i < pos.Y + BrushSize.Y; i++)
 	{
 		//la "gauche" et la "droite" (x - 1 et x + BrushSizeSizeX)
-		SetVertice(verticesToEdit, GetPos(pos.X - 1, i, UpRight, mapSize.X));
-		SetVertice(verticesToEdit, GetPos(pos.X - 1, i, DownRight, mapSize.X));
-		SetVertice(verticesToEdit, GetPos(pos.X + brushSize.X, i, UpLeft, mapSize.X));
-		SetVertice(verticesToEdit, GetPos(pos.X + brushSize.X, i, DownLeft, mapSize.X));
-		for (j = pos.X; j < pos.X + brushSize.X; j++)
+		AddVertice(map, GetPos(pos.X - 1, i, UpRight, map.MapSize.X), value);
+		AddVertice(map, GetPos(pos.X - 1, i, DownRight, map.MapSize.X), value);
+		AddVertice(map, GetPos(pos.X + BrushSize.X, i, UpLeft, map.MapSize.X), value);
+		AddVertice(map, GetPos(pos.X + BrushSize.X, i, DownLeft, map.MapSize.X), value);
+		for (j = pos.X; j < pos.X + BrushSize.X; j++)
 		{
 			if (i == pos.Y)
 			{
 				//le "haut" et le "bas" (y - 1 et y + BrushSizeSizeY)
-				SetVertice(verticesToEdit, GetPos(j, pos.Y - 1, DownLeft, mapSize.X));
-				SetVertice(verticesToEdit, GetPos(j, pos.Y - 1, DownRight, mapSize.X));
-				SetVertice(verticesToEdit, GetPos(j, pos.Y + brushSize.Y, UpLeft, mapSize.X));
-				SetVertice(verticesToEdit, GetPos(j, pos.Y + brushSize.Y, UpRight, mapSize.X));
+				AddVertice(map, GetPos(j, pos.Y - 1, DownLeft, map.MapSize.X), value);
+				AddVertice(map, GetPos(j, pos.Y - 1, DownRight, map.MapSize.X), value);
+				AddVertice(map, GetPos(j, pos.Y + BrushSize.Y, UpLeft, map.MapSize.X), value);
+				AddVertice(map, GetPos(j, pos.Y + BrushSize.Y, UpRight, map.MapSize.X), value);
 			}
 			//le centre du carré
-			SetVertice(verticesToEdit, GetPos(j, i, UpLeft, mapSize.X));
-			SetVertice(verticesToEdit, GetPos(j, i, UpRight, mapSize.X));
-			SetVertice(verticesToEdit, GetPos(j, i, DownLeft, mapSize.X));
-			SetVertice(verticesToEdit, GetPos(j, i, DownRight, mapSize.X));
+			AddVertice(map, GetPos(j, i, UpLeft, map.MapSize.X), value);
+			AddVertice(map, GetPos(j, i, UpRight, map.MapSize.X), value);
+			AddVertice(map, GetPos(j, i, DownLeft, map.MapSize.X), value);
+			AddVertice(map, GetPos(j, i, DownRight, map.MapSize.X), value);
 		}
 	}
-	return (verticesToEdit);
+}
+
+void
+UProceduralBrushTool::ApplyBrushToMap(FVector2D pos, FMapStruct &map)
+{
+	FVector2D	relative_pos = FVector2D((int)(pos.X / map.MapSquareScale), (int)(pos.Y / map.MapSquareScale));
+
+	SquareBrush(relative_pos, map);
 }

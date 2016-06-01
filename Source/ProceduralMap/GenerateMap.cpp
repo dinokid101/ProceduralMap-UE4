@@ -22,67 +22,12 @@ AGenerateMap::AGenerateMap()
 	}
 }
 
-FMapStruct AGenerateMap::setQuad(int x, int y, int index)
-{
-	FMapStruct				map;
-	int						squareScale = SquareScale;
-	int						heightScale = SquareHeightScale;
-
-	map.Vertices.Add(FVector((squareScale * x), (squareScale * y), 1 * heightScale));
-	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y), 1 * heightScale));
-	map.Vertices.Add(FVector((squareScale * x), (squareScale * y) + squareScale, 1 * heightScale));
-	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y) + squareScale, 1 * heightScale));
-
-	map.UV0.Add(FVector2D(0, 0));
-	map.UV0.Add(FVector2D(1, 0));
-	map.UV0.Add(FVector2D(0, 1));
-	map.UV0.Add(FVector2D(1, 1));
-
-	UKismetProceduralMeshLibrary::ConvertQuadToTriangles(map.Triangles, index + 1, index, index + 2, index + 3);
-	return (map);
-}
-
-FMapStruct AGenerateMap::GenerateMap(int x, int y)
-{
-	FMapStruct	map;
-	FMapStruct	mapToAppend;
-	int			index;
-
-	index = 0;
-	for (int i = 0; i < y; i++)
-	{
-		for (int j = 0; j < x; j++, index += 4)
-		{
-			mapToAppend = setQuad(j, i, index);
-			map.Vertices.Append(mapToAppend.Vertices);
-			map.Triangles.Append(mapToAppend.Triangles);
-			map.UV0.Append(mapToAppend.UV0);
-		}
-	}
-
-	if (CalculateNormalAndTangent)
-		UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
-	return (map);
-}
-
-void AGenerateMap::SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
-{
-	int i = ((pos.Y * mapSize.X) + pos.X) * 4;
-
-	if (i >= map->Vertices.Num() || map == NULL)
-		return;
-
-	map->Vertices[i++].Z = AB.X;
-	map->Vertices[i++].Z = AB.Y;
-	map->Vertices[i++].Z = CD.X;
-	map->Vertices[i++].Z = CD.Y;
-}
-
 // Called when the game starts or when spawned
-void AGenerateMap::BeginPlay()
+void
+AGenerateMap::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	_Map = GenerateMap(MapSize.X, MapSize.Y);
 
 	PerlinNoise perlin = PerlinNoise(MapSize.X + 1, MapSize.Y + 1, PerlinRes);
@@ -108,8 +53,82 @@ void AGenerateMap::BeginPlay()
 }
 
 // Called every frame
-void AGenerateMap::Tick( float DeltaTime )
+void
+AGenerateMap::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+	Super::Tick(DeltaTime);
 
+}
+
+FMapStruct
+AGenerateMap::setQuad(int x, int y, int index)
+{
+	FMapStruct				map;
+	int						squareScale = SquareScale;
+	int						heightScale = SquareHeightScale;
+
+	map.Vertices.Add(FVector((squareScale * x), (squareScale * y), 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y), 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x), (squareScale * y) + squareScale, 1 * heightScale));
+	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y) + squareScale, 1 * heightScale));
+
+	map.UV0.Add(FVector2D(0, 0));
+	map.UV0.Add(FVector2D(1, 0));
+	map.UV0.Add(FVector2D(0, 1));
+	map.UV0.Add(FVector2D(1, 1));
+
+	UKismetProceduralMeshLibrary::ConvertQuadToTriangles(map.Triangles, index + 1, index, index + 2, index + 3);
+	return (map);
+}
+
+FMapStruct
+AGenerateMap::GenerateMap(int x, int y)
+{
+	FMapStruct	map;
+	FMapStruct	mapToAppend;
+	int			index;
+
+	map.MapSize.X = x;
+	map.MapSize.Y = y;
+
+	map.MapSquareScale = SquareScale;
+	map.MapHeightScale = SquareHeightScale;
+
+	index = 0;
+	for (int i = 0; i < y; i++)
+	{
+		for (int j = 0; j < x; j++, index += 4)
+		{
+			mapToAppend = setQuad(j, i, index);
+			map.Vertices.Append(mapToAppend.Vertices);
+			map.Triangles.Append(mapToAppend.Triangles);
+			map.UV0.Append(mapToAppend.UV0);
+		}
+	}
+
+	if (CalculateNormalAndTangent)
+		UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
+	return (map);
+}
+
+void
+AGenerateMap::SetSquareZWithPosition(FMapStruct *map, FVector2D pos, FVector2D mapSize, FVector2D AB, FVector2D CD)
+{
+	int i = ((pos.Y * mapSize.X) + pos.X) * 4;
+
+	if (i >= map->Vertices.Num() || map == NULL)
+		return;
+
+	map->Vertices[i++].Z = AB.X;
+	map->Vertices[i++].Z = AB.Y;
+	map->Vertices[i++].Z = CD.X;
+	map->Vertices[i++].Z = CD.Y;
+}
+
+void
+AGenerateMap::UpdateMap(FMapStruct &map)
+{
+	if (CalculateNormalAndTangent)
+		UKismetProceduralMeshLibrary::CalculateTangentsForMesh(map.Vertices, map.Triangles, map.UV0, map.Normals, map.Tangent);
+	Mesh->CreateMeshSection(0, map.Vertices, map.Triangles, map.Normals, map.UV0, TArray<FColor>(), map.Tangent, true);
 }
