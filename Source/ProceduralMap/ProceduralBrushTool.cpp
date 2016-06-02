@@ -46,6 +46,7 @@ UProceduralBrushTool::SquareBrush(FVector2D pos, float ZValue, FVector2D BrushSi
 }
 
 void
+UProceduralBrushTool::HLine(int x, int y, int w, float ZValue, FMapStruct &map, TArray<int32> &lookup)
 {
 	int i;
 	int pos;
