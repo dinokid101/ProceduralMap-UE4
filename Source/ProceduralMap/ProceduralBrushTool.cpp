@@ -12,7 +12,7 @@ UProceduralBrushTool::GetPos(int x, int y, int quadIndice, FVector2D mapSize)
 }
 
 inline void
-UProceduralBrushTool::SetVerticeZ(int x, int y, FMapStruct &map, int value)
+UProceduralBrushTool::SetVerticeZ(int x, int y, float value, FMapStruct &map)
 {
 	int pos;
 
@@ -30,42 +30,34 @@ UProceduralBrushTool::SetVerticeZ(int x, int y, FMapStruct &map, int value)
 }
 
 void
-UProceduralBrushTool::SquareBrush(FVector2D pos, FMapStruct &map)
+UProceduralBrushTool::SquareBrush(FVector2D pos, float ZValue, FVector2D BrushSize, UPARAM(ref) FMapStruct &map)
 {
 	int i, j;
-	int value = 10;
+
+	pos = FVector2D((int)(pos.X / map.MapSquareScale), (int)(pos.Y / map.MapSquareScale));
 
 	for (i = pos.Y; i < pos.Y + BrushSize.Y; i++)
 	{
 		for (j = pos.X; j < pos.X + BrushSize.X; j++)
 		{
-			SetVerticeZ(j, i, map, value);
+			SetVerticeZ(j, i, ZValue, map);
 		}
 	}
 }
 
 void
-UProceduralBrushTool::ApplyBrushToMap(FVector2D pos, FMapStruct &map)
 {
-	FVector2D	relative_pos = FVector2D((int)(pos.X / map.MapSquareScale), (int)(pos.Y / map.MapSquareScale));
-
-	//SquareBrush(relative_pos, map);
-	CircleBrush(relative_pos, map, 4);
-}
-
-void
-UProceduralBrushTool::HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32> &lookup)
-{
+	int i;
 	int pos;
 
-	for (int i = 0; i < w; i++)
+	for (i = 0; i < w; i++)
 	{
-		pos = (yp * map.MapSize.X + (xp + i));
+		pos = (y * map.MapSize.X + (x + i));
 		if (!(pos < 0 || pos >= map.Vertices.Num()))
 		{
 			if (!(lookup.Find(pos) != INDEX_NONE))
 			{
-				SetVerticeZ(xp + i, yp, map, 10);
+				SetVerticeZ(x + i, y, ZValue, map);
 				lookup.AddUnique(pos);
 			}
 		}
@@ -73,13 +65,15 @@ UProceduralBrushTool::HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32
 }
 
 void
-UProceduralBrushTool::CircleBrush(FVector2D pos, FMapStruct &map, int radius)
+UProceduralBrushTool::CircleBrush(FVector2D pos, float ZValue, int Radius, UPARAM(ref) FMapStruct &map)
 {
 	TArray<int32> lookup;
 
+	pos = FVector2D((int)(pos.X / map.MapSquareScale), (int)(pos.Y / map.MapSquareScale));
+
 	int xoff = 0;
-	int yoff = radius;
-	int balance = -radius;
+	int yoff = Radius;
+	int balance = -Radius;
 	int p0, p1;
 	int w0, w1;
 
@@ -91,11 +85,11 @@ UProceduralBrushTool::CircleBrush(FVector2D pos, FMapStruct &map, int radius)
 		w0 = xoff + xoff;
 		w1 = yoff + yoff;
 
-		HLine(p0, pos.Y + yoff, w0, map, lookup);
-		HLine(p0, pos.Y - yoff, w0, map, lookup);
+		HLine(p0, pos.Y + yoff, w0, ZValue, map, lookup);
+		HLine(p0, pos.Y - yoff, w0, ZValue, map, lookup);
 
-		HLine(p1, pos.Y + xoff, w1, map, lookup);
-		HLine(p1, pos.Y - xoff, w1, map, lookup);
+		HLine(p1, pos.Y + xoff, w1, ZValue, map, lookup);
+		HLine(p1, pos.Y - xoff, w1, ZValue, map, lookup);
 
 		if ((balance += xoff++ + xoff) >= 0)
 			balance -= --yoff + yoff;

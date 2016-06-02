@@ -24,23 +24,15 @@ UCLASS(Blueprintable)
 class PROCEDURALMAP_API UProceduralBrushTool : public UObject
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Brush")
-		FVector2D		BrushSize = FVector2D(1, 1);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Brush")
-		void			SquareBrush(FVector2D pos, UPARAM(ref) FMapStruct &map);
+		void			SquareBrush(FVector2D pos, float ZValue, FVector2D BrushSize, UPARAM(ref) FMapStruct &map);
+		UFUNCTION(BlueprintCallable, Category = "Brush")
+		void			CircleBrush(FVector2D pos, float ZValue, int Radius, UPARAM(ref) FMapStruct &map);
 
-	UFUNCTION(BlueprintCallable, Category = "Brush")
-		int				GetPos(int x, int y, int quadIndice, FVector2D mapSize);
-
-	UFUNCTION(BlueprintCallable, Category = "Brush")
-		void			ApplyBrushToMap(FVector2D pos, UPARAM(ref) FMapStruct &map);
-
-	inline void			SetVerticeZ(int x, int y, FMapStruct &map, int value);
-
-	void				HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32> &lookup);
-	void				CircleBrush(FVector2D pos, UPARAM(ref) FMapStruct &map, int radius);
+protected:
+	int					GetPos(int x, int y, int quadIndice, FVector2D mapSize);
+	inline void			SetVerticeZ(int x, int y, float value, FMapStruct &map);
+	void				HLine(int x, int y, int w, float ZValue, FMapStruct &map, TArray<int32> &lookup);
 };
