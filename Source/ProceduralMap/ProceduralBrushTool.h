@@ -39,12 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Brush")
 		void			ApplyBrushToMap(FVector2D pos, UPARAM(ref) FMapStruct &map);
 
+	inline void			SetVerticeZ(int x, int y, FMapStruct &map, int value);
 
 	void				HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32> &lookup);
 	void				CircleBrush(FVector2D pos, UPARAM(ref) FMapStruct &map, int radius);
-
-private:
-	inline void AddVertice(FMapStruct &map, int pos, int value);
-
-	inline void AddVertice(FMapStruct &map, int pos, int value, TArray<int32> &lookup);
 };

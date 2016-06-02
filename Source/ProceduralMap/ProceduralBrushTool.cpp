@@ -12,11 +12,21 @@ UProceduralBrushTool::GetPos(int x, int y, int quadIndice, FVector2D mapSize)
 }
 
 inline void
-UProceduralBrushTool::AddVertice(FMapStruct &map, int pos, int value)
+UProceduralBrushTool::SetVerticeZ(int x, int y, FMapStruct &map, int value)
 {
-	if (pos < 0 || pos >= map.Vertices.Num())
-		return;
-	map.Vertices[pos].Z += value;
+	int pos;
+
+	if ((x < 0 || y < 0) || (x >= map.MapSize.X || y >= map.MapSize.Y))
+		return ;
+
+	if ((pos = GetPos(x, y, UpLeft, map.MapSize)) != -1)
+		map.Vertices[pos].Z += value;
+	if ((pos = GetPos(x, y - 1, DownLeft, map.MapSize)) != -1)
+		map.Vertices[pos].Z += value;
+	if ((pos = GetPos(x - 1, y, UpRight, map.MapSize)) != -1)
+		map.Vertices[pos].Z += value;
+	if ((pos = GetPos(x - 1, y - 1, DownRight, map.MapSize)) != -1)
+		map.Vertices[pos].Z += value;
 }
 
 void
@@ -25,33 +35,11 @@ UProceduralBrushTool::SquareBrush(FVector2D pos, FMapStruct &map)
 	int i, j;
 	int value = 10;
 
-	//Les 4 coins
-	AddVertice(map, GetPos(pos.X - 1, pos.Y - 1, DownRight, map.MapSize), value);
-	AddVertice(map, GetPos(pos.X + BrushSize.X, pos.Y - 1, DownLeft, map.MapSize), value);
-	AddVertice(map, GetPos(pos.X + BrushSize.X, pos.Y + BrushSize.Y, UpLeft, map.MapSize), value);
-	AddVertice(map, GetPos(pos.X - 1, pos.Y + BrushSize.Y, UpRight, map.MapSize), value);
 	for (i = pos.Y; i < pos.Y + BrushSize.Y; i++)
 	{
-		//la "gauche" et la "droite" (x - 1 et x + BrushSizeSizeX)
-		AddVertice(map, GetPos(pos.X - 1, i, UpRight, map.MapSize), value);
-		AddVertice(map, GetPos(pos.X - 1, i, DownRight, map.MapSize), value);
-		AddVertice(map, GetPos(pos.X + BrushSize.X, i, UpLeft, map.MapSize), value);
-		AddVertice(map, GetPos(pos.X + BrushSize.X, i, DownLeft, map.MapSize), value);
 		for (j = pos.X; j < pos.X + BrushSize.X; j++)
 		{
-			if (i == pos.Y)
-			{
-				//le "haut" et le "bas" (y - 1 et y + BrushSizeSizeY)
-				AddVertice(map, GetPos(j, pos.Y - 1, DownLeft, map.MapSize), value);
-				AddVertice(map, GetPos(j, pos.Y - 1, DownRight, map.MapSize), value);
-				AddVertice(map, GetPos(j, pos.Y + BrushSize.Y, UpLeft, map.MapSize), value);
-				AddVertice(map, GetPos(j, pos.Y + BrushSize.Y, UpRight, map.MapSize), value);
-			}
-			//le centre du carré
-			AddVertice(map, GetPos(j, i, UpLeft, map.MapSize), value);
-			AddVertice(map, GetPos(j, i, UpRight, map.MapSize), value);
-			AddVertice(map, GetPos(j, i, DownLeft, map.MapSize), value);
-			AddVertice(map, GetPos(j, i, DownRight, map.MapSize), value);
+			SetVerticeZ(j, i, map, value);
 		}
 	}
 }
@@ -65,20 +53,6 @@ UProceduralBrushTool::ApplyBrushToMap(FVector2D pos, FMapStruct &map)
 	CircleBrush(relative_pos, map, 4);
 }
 
-inline void
-UProceduralBrushTool::AddVertice(FMapStruct &map, int pos, int value, TArray<int32> &lookup)
-{
-	if (pos < 0 || pos >= map.Vertices.Num())
-		return;
-	if (lookup.Find(pos) != INDEX_NONE)
-		return;
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Not Found !"));
-
-	map.Vertices[pos].Z += value;
-	lookup.AddUnique(pos);
-}
-
 void
 UProceduralBrushTool::HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32> &lookup)
 {
@@ -86,17 +60,15 @@ UProceduralBrushTool::HLine(int xp, int yp, int w, FMapStruct &map, TArray<int32
 
 	for (int i = 0; i < w; i++)
 	{
-		pos = GetPos(xp + i, yp, DownLeft, map.MapSize);
-		AddVertice(map, pos, 10, lookup);
-
-		pos = GetPos(xp + i, yp, DownRight, map.MapSize);
-		AddVertice(map, pos, 10, lookup);
-
-		pos = GetPos(xp + i, yp, UpLeft, map.MapSize);
-		AddVertice(map, pos, 10, lookup);
-
-		pos = GetPos(xp + i, yp, UpRight, map.MapSize);
-		AddVertice(map, pos, 10, lookup);
+		pos = (yp * map.MapSize.X + (xp + i));
+		if (!(pos < 0 || pos >= map.Vertices.Num()))
+		{
+			if (!(lookup.Find(pos) != INDEX_NONE))
+			{
+				SetVerticeZ(xp + i, yp, map, 10);
+				lookup.AddUnique(pos);
+			}
+		}
 	}
 }
 
@@ -104,7 +76,6 @@ void
 UProceduralBrushTool::CircleBrush(FVector2D pos, FMapStruct &map, int radius)
 {
 	TArray<int32> lookup;
-
 
 	int xoff = 0;
 	int yoff = radius;
