@@ -72,10 +72,10 @@ AGenerateMap::setQuad(int x, int y, int index)
 	map.Vertices.Add(FVector((squareScale * x), (squareScale * y) + squareScale, 1 * heightScale));
 	map.Vertices.Add(FVector((squareScale * x) + squareScale, (squareScale * y) + squareScale, 1 * heightScale));
 
-	map.UV0.Add(FVector2D(0, 0));
-	map.UV0.Add(FVector2D(1, 0));
-	map.UV0.Add(FVector2D(0, 1));
-	map.UV0.Add(FVector2D(1, 1));
+	map.UV0.Add(FVector2D(x, y));
+	map.UV0.Add(FVector2D(x + 1, y));
+	map.UV0.Add(FVector2D(x, y + 1));
+	map.UV0.Add(FVector2D(x + 1, y + 1));
 
 	UKismetProceduralMeshLibrary::ConvertQuadToTriangles(map.Triangles, index + 1, index, index + 2, index + 3);
 	return (map);

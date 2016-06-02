@@ -24,7 +24,6 @@ UProceduralBrushTool::SquareBrush(FVector2D pos, FMapStruct &map)
 {
 	int i, j;
 	int value = 10;
-	FVector2D brushSize = FVector2D(1, 1);
 
 	//Les 4 coins
 	AddVertice(map, GetPos(pos.X - 1, pos.Y - 1, DownRight, map.MapSize), value);
