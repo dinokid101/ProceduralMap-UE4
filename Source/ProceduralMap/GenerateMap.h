@@ -79,7 +79,7 @@ public:
 	UPROPERTY(BluePrintReadwrite)
 		UProceduralMeshComponent *Mesh;
 	
-protected:
+public:
 	UPROPERTY(BluePrintReadwrite)
 		FMapStruct			_Map;
 	UFUNCTION(BluePrintCallable, Category = GenerateMap)
